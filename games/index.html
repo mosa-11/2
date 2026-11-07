@@ -176,7 +176,29 @@ const addRows = rows => rows.forEach(x=>GAMES.push({id:GAMES.length,n:x[0],c:CNA
 addRows(TOPLIB);
 let fullLoaded = false;
 // صور خاصة: ضيف هنا اسم اللعبة ورابط صورتها إذا تريد تغيّر صورة
-const CUSTOM_IMG = { /* "Minecraft": "images/minecraft.jpg", */ };
+const WIKI = "https://upload.wikimedia.org/wikipedia/en/";
+const CUSTOM_IMG = {
+ "Astro Bot Rescue Mission": WIKI+"2/2c/Astro_Bot_Rescue_Mission_NA_Box_Art.jpg",
+ "Bloodborne": WIKI+"6/68/Bloodborne_Cover_Wallpaper.jpg",
+ "Call of Duty: Black Ops 4": WIKI+"1/1c/Call_of_Duty_Black_Ops_4_official_box_art.jpg",
+ "Call of Duty: Black Ops Cold War": WIKI+"3/31/BOCW_Cover_Art.jpg",
+ "Call of Duty: Modern Warfare": WIKI+"1/1f/Call_of_Duty_Modern_Warfare_%282019%29_cover.jpg",
+ "Call of Duty: Vanguard": WIKI+"0/06/Call_of_Duty_Vanguard_cover_art.jpg",
+ "Crash Team Racing Nitro-Fueled": WIKI+"3/36/Crash_Team_Racing_Nitro-Fueled_cover_art.jpg",
+ "Dreams": WIKI+"3/3f/Dreams_cover_art.jpg",
+ "Driveclub": WIKI+"6/6f/Driveclub_box_art.jpg",
+ "EA SPORTS UFC 2": WIKI+"6/62/EA_Sports_UFC_2_cover_art.jpg",
+ "EA SPORTS UFC 3": WIKI+"f/fc/EA_Sports_UFC_3_Official_Boxart.jpg",
+ "EA SPORTS UFC 4": WIKI+"3/35/UFC_4_cover_art.png",
+ "Gran Turismo 7": WIKI+"1/14/Gran_Turismo_7_cover_art.jpg",
+ "Gran Turismo Sport": WIKI+"9/96/GT_Sport_cover_art.jpg",
+ "Gravity Rush 2": WIKI+"9/94/Gravity_Rush_2.jpg",
+ "Knack": WIKI+"f/f2/Knack_%28game_box_art%29.jpg",
+ "LittleBigPlanet 3": WIKI+"b/be/LittleBigPlanet_3_boxart.jpg",
+ "The Last Guardian": WIKI+"2/25/The_Last_Guardian_cover_art.jpg",
+ "inFAMOUS Second Son": WIKI+"3/34/Infamous_second_son_boxart.jpg",
+ /* "Minecraft": "images/minecraft.jpg", */
+};
 
 const ALIAS = [[/FIFA|EA SPORTS FC/,"fifa فيفا فيفه"],[/PES|eFootball|Pro Evolution/,"pes بيس"],[/Call of Duty/,"cod كول اوف ديوتي كود"],
  [/Grand Theft Auto|GTA/,"جاتا gta"],[/Resident Evil/,"re ريزدنت رزدنت"],[/Spider-Man/,"سبايدر مان spiderman"],[/God of War/,"جود اوف وار"],
@@ -187,15 +209,16 @@ function keys(g){ if(!g.k){ g.k=(g.n+" "+g.c+" "+ALIAS.filter(a=>a[0].test(g.n))
 
 const STEAM = "https://cdn.cloudflare.steamstatic.com/steam/apps/";
 const STEAM2 = "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/";
-function psImg(cid){
-  const reg = cid.startsWith("EP") ? "GB/en" : "US/en";
-  return `https://store.playstation.com/store/api/chihiro/00_09_000/container/${reg}/999/${cid}/image?w=400&h=400`;
+// صورة اللعبة من متجر PlayStation — نجرب أكثر من منطقة لأن بعض الصور تشتغل بمنطقة وحدة
+function psImgs(cid){
+  const regs = cid.startsWith("EP") ? ["GB/en","AE/en"] : cid.startsWith("HP") ? ["HK/en","SG/en"] : ["US/en","AE/en"];
+  return regs.map(r => `https://store.playstation.com/store/api/chihiro/00_09_000/container/${r}/999/${cid}/image?w=400&h=400`);
 }
 function sources(g){
   const l=[];
   if (CUSTOM_IMG[g.n]) l.push([CUSTOM_IMG[g.n],0]);
   if (g.s) l.push([STEAM+g.s+"/library_600x900.jpg",0],[STEAM2+g.s+"/library_600x900.jpg",0]);
-  if (g.cid) l.push([psImg(g.cid),1]);
+  if (g.cid) psImgs(g.cid).forEach(u=>l.push([u,1]));
   if (g.s) l.push([STEAM+g.s+"/header.jpg",1]);
   return l;
 }
@@ -308,7 +331,7 @@ window.addGames = rows => {
   try{ (JSON.parse(localStorage.getItem("ys_sel")||"[]")).forEach(n=>{ const g=GAMES.find(x=>x.n===n); if(g) sel.add(g.id) }) }catch(e){}
   renderCats(); updateBar(); if (cat!==TOP || q) render();
 };
-window.addEventListener("load", () => { const sc=document.createElement("script"); sc.src="games.js"; document.body.appendChild(sc); });
+window.addEventListener("load", () => { const sc=document.createElement("script"); sc.src="games.js?v=4"; document.body.appendChild(sc); });
 </script>
 </body>
 </html>
