@@ -19,19 +19,40 @@
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html{touch-action:manipulation;-webkit-text-size-adjust:100%}
-html,body{background:var(--bg);color:var(--text);font-family:'Cairo',system-ui,sans-serif;min-height:100%}
+html{background:var(--bg)}
+body{background:transparent;}
+html,body{color:var(--text);font-family:'Cairo',system-ui,sans-serif;min-height:100%}
 body{overflow-x:hidden;padding-bottom:110px}
 /* خلفية شبكة نيون */
-.bg{position:fixed;inset:0;z-index:-1;overflow:hidden}
-.bg::before{content:"";position:absolute;inset:-50%;background:
-  linear-gradient(rgba(0,240,255,.07) 1px,transparent 1px) 0 0/44px 44px,
-  linear-gradient(90deg,rgba(255,43,214,.06) 1px,transparent 1px) 0 0/44px 44px;
-  transform:perspective(600px) rotateX(55deg) translateY(-10%);animation:grid 14s linear infinite}
-.bg::after{content:"";position:absolute;inset:0;background:
-  radial-gradient(600px 400px at 85% -5%,rgba(255,43,214,.28),transparent 60%),
-  radial-gradient(600px 420px at 5% 10%,rgba(0,240,255,.22),transparent 60%),
-  linear-gradient(transparent 55%,var(--bg))}
-@keyframes grid{to{background-position:0 44px,44px 0}}
+/* ===== خلفية متحركة ===== */
+.bg{position:fixed;inset:0;z-index:-1;overflow:hidden;background:radial-gradient(120% 80% at 50% 0%,#0d0430 0%,#05010f 60%);contain:strict}
+.blob{position:absolute;width:70vmax;height:70vmax;border-radius:50%;opacity:.55;will-change:transform}
+.b1{background:radial-gradient(circle,rgba(255,43,214,.55),rgba(255,43,214,0) 62%);top:-30vmax;right:-25vmax;animation:drift1 22s ease-in-out infinite alternate}
+.b2{background:radial-gradient(circle,rgba(0,240,255,.45),rgba(0,240,255,0) 62%);top:15vh;left:-35vmax;animation:drift2 26s ease-in-out infinite alternate}
+.b3{background:radial-gradient(circle,rgba(157,107,255,.5),rgba(157,107,255,0) 62%);bottom:-40vmax;right:-10vmax;animation:drift3 30s ease-in-out infinite alternate}
+@keyframes drift1{to{transform:translate(-18vmax,22vmax) scale(1.15)}}
+@keyframes drift2{to{transform:translate(28vmax,-12vmax) scale(.9)}}
+@keyframes drift3{to{transform:translate(-25vmax,-18vmax) scale(1.2)}}
+.floor{position:absolute;left:-50%;right:-50%;bottom:0;height:42vh;perspective:300px;overflow:hidden;
+  -webkit-mask:linear-gradient(transparent,#000 12%);mask:linear-gradient(transparent,#000 12%)}
+.floor::before{content:"";position:absolute;inset:-100% 0 0 0;transform-origin:50% 100%;transform:rotateX(62deg);
+  background:linear-gradient(rgba(0,240,255,.5) 2px,transparent 2px) 0 0/100% 56px,
+             linear-gradient(90deg,rgba(255,43,214,.42) 2px,transparent 2px) 0 0/56px 100%;
+  animation:run 1.6s linear infinite;will-change:background-position}
+@keyframes run{to{background-position:0 56px,0 0}}
+.horizon{position:absolute;left:0;right:0;bottom:42vh;height:2px;background:linear-gradient(90deg,transparent,#ff2bd6 25%,#00f0ff 75%,transparent);
+  box-shadow:0 0 22px 4px rgba(255,43,214,.45),0 0 60px 10px rgba(0,240,255,.2);animation:hglow 4s ease-in-out infinite alternate}
+@keyframes hglow{from{opacity:.55}to{opacity:1}}
+.sun{position:absolute;left:50%;bottom:42vh;width:46vmin;height:23vmin;transform:translateX(-50%);border-radius:46vmin 46vmin 0 0;
+  background:linear-gradient(#ffd400,#ff2bd6 60%,#9d6bff);opacity:.22;
+  -webkit-mask:repeating-linear-gradient(to top,transparent 0 6px,#000 6px 15px);mask:repeating-linear-gradient(to top,transparent 0 6px,#000 6px 15px)}
+.sym{position:absolute;bottom:-12vh;font:800 var(--sz)/1 'Orbitron',sans-serif;color:var(--c);text-shadow:0 0 10px var(--c),0 0 22px var(--c);
+  opacity:0;animation:float var(--d) linear var(--dl) infinite;will-change:transform,opacity}
+@keyframes float{0%{transform:translate3d(0,0,0) rotate(0);opacity:0}10%{opacity:var(--o)}85%{opacity:var(--o)}100%{transform:translate3d(var(--x),-120vh,0) rotate(220deg);opacity:0}}
+.star{position:absolute;width:2px;height:2px;border-radius:50%;background:#fff;box-shadow:0 0 6px #fff;animation:tw var(--d) ease-in-out var(--dl) infinite alternate}
+@keyframes tw{from{opacity:.1}to{opacity:.9}}
+.scan{position:absolute;inset:0;background:repeating-linear-gradient(to bottom,rgba(255,255,255,.025) 0 1px,transparent 1px 3px);pointer-events:none}
+@media (prefers-reduced-motion:reduce){.bg *{animation:none!important}}
 
 header{padding:26px 16px 10px;text-align:center}
 .logo{font-weight:900;font-size:clamp(34px,9vw,64px);line-height:1.15;color:#fff;
@@ -43,7 +64,8 @@ header{padding:26px 16px 10px;text-align:center}
   box-shadow:0 0 12px rgba(0,240,255,.35),inset 0 0 12px rgba(0,240,255,.15)}
 .hint{color:var(--muted);font-size:14px;margin-top:12px}
 
-.controls{position:sticky;top:0;z-index:20;padding:10px 14px 12px;background:linear-gradient(var(--bg) 75%,transparent);backdrop-filter:blur(6px)}
+.controls{position:sticky;top:0;z-index:20;padding:10px 14px 12px;transition:background .25s}
+.controls.stuck{background:linear-gradient(rgba(5,1,15,.9) 70%,rgba(5,1,15,0))}
 .search{position:relative;max-width:720px;margin:0 auto}
 .search input{width:100%;padding:13px 46px 13px 16px;border-radius:14px;border:1px solid var(--line);background:rgba(13,7,32,.9);
   color:var(--text);font:600 16px 'Cairo';outline:none;transition:.2s}
@@ -151,7 +173,7 @@ footer a{color:var(--cyan);text-decoration:none}
 </style>
 </head>
 <body>
-<div class="bg"></div>
+<div class="bg" aria-hidden="true"><div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div><i class="star" style="left:57%;top:18%;--d:3.0s;--dl:-0.3s"></i><i class="star" style="left:65%;top:26%;--d:1.9s;--dl:-1.4s"></i><i class="star" style="left:62%;top:26%;--d:1.6s;--dl:-2.7s"></i><i class="star" style="left:97%;top:35%;--d:2.9s;--dl:-3.5s"></i><i class="star" style="left:40%;top:21%;--d:3.2s;--dl:-2.4s"></i><i class="star" style="left:74%;top:51%;--d:2.6s;--dl:-3.4s"></i><i class="star" style="left:34%;top:30%;--d:3.2s;--dl:-0.3s"></i><i class="star" style="left:93%;top:44%;--d:2.3s;--dl:-2.3s"></i><i class="star" style="left:87%;top:52%;--d:2.6s;--dl:-2.9s"></i><i class="star" style="left:85%;top:22%;--d:1.6s;--dl:-1.8s"></i><i class="star" style="left:21%;top:39%;--d:1.8s;--dl:-0.2s"></i><i class="star" style="left:98%;top:18%;--d:1.8s;--dl:-1.0s"></i><i class="star" style="left:50%;top:55%;--d:2.7s;--dl:-0.7s"></i><i class="star" style="left:51%;top:35%;--d:2.2s;--dl:-0.5s"></i><i class="star" style="left:55%;top:55%;--d:2.9s;--dl:-2.8s"></i><i class="star" style="left:45%;top:43%;--d:3.7s;--dl:-3.8s"></i><i class="star" style="left:19%;top:5%;--d:1.9s;--dl:-0.9s"></i><i class="star" style="left:29%;top:0%;--d:2.7s;--dl:-2.4s"></i><i class="star" style="left:33%;top:18%;--d:1.5s;--dl:-1.7s"></i><i class="star" style="left:47%;top:39%;--d:2.9s;--dl:-3.8s"></i><i class="star" style="left:88%;top:54%;--d:2.8s;--dl:-2.5s"></i><i class="star" style="left:86%;top:47%;--d:1.6s;--dl:-3.6s"></i><i class="star" style="left:99%;top:55%;--d:3.2s;--dl:-2.2s"></i><i class="star" style="left:50%;top:25%;--d:2.5s;--dl:-1.9s"></i><i class="star" style="left:51%;top:3%;--d:2.0s;--dl:-3.9s"></i><i class="star" style="left:56%;top:10%;--d:1.8s;--dl:-2.4s"></i><div class="sun"></div><div class="horizon"></div><div class="floor"></div><i class="sym" style="left:43%;--sz:22px;--c:#00f0ff;--d:22s;--dl:-20s;--x:-68px;--o:0.35">△</i><i class="sym" style="left:70%;--sz:21px;--c:#ff2bd6;--d:21s;--dl:-18s;--x:-66px;--o:0.55">○</i><i class="sym" style="left:29%;--sz:19px;--c:#39ff88;--d:17s;--dl:-13s;--x:27px;--o:0.35">✕</i><i class="sym" style="left:32%;--sz:20px;--c:#ff7ab8;--d:24s;--dl:-13s;--x:-65px;--o:0.55">□</i><i class="sym" style="left:17%;--sz:25px;--c:#9d6bff;--d:26s;--dl:-20s;--x:69px;--o:0.35">△</i><i class="sym" style="left:75%;--sz:36px;--c:#ffd400;--d:22s;--dl:-1s;--x:-24px;--o:0.35">○</i><i class="sym" style="left:73%;--sz:22px;--c:#00f0ff;--d:20s;--dl:-13s;--x:-44px;--o:0.55">✕</i><i class="sym" style="left:17%;--sz:36px;--c:#ff2bd6;--d:20s;--dl:-17s;--x:-34px;--o:0.35">□</i><i class="sym" style="left:76%;--sz:36px;--c:#39ff88;--d:26s;--dl:-6s;--x:15px;--o:0.35">△</i><i class="sym" style="left:72%;--sz:40px;--c:#ff7ab8;--d:17s;--dl:-18s;--x:-65px;--o:0.55">○</i><i class="sym" style="left:28%;--sz:33px;--c:#9d6bff;--d:26s;--dl:-17s;--x:29px;--o:0.45">✕</i><i class="sym" style="left:61%;--sz:36px;--c:#ffd400;--d:30s;--dl:-14s;--x:12px;--o:0.45">□</i><i class="sym" style="left:33%;--sz:23px;--c:#00f0ff;--d:27s;--dl:-24s;--x:-18px;--o:0.35">△</i><i class="sym" style="left:75%;--sz:27px;--c:#ff2bd6;--d:24s;--dl:-15s;--x:7px;--o:0.55">○</i><div class="scan"></div></div>
 <canvas id="fx"></canvas>
 
 <header>
@@ -520,6 +542,10 @@ $("clearAll").onclick = () => { sel.clear(); save(); render(); updateBar(); };
 
 if (ORDER){ document.body.classList.add("order"); $("browseAll").href = location.origin + location.pathname; }
 renderWho(); renderDev(); renderCats(); render(); updateBar();
+// خلفية شريط البحث تظهر بس لما ينزل الزبون
+(()=>{ const c=document.querySelector(".controls"); let st=false;
+  const f=()=>{ const v=c.getBoundingClientRect().top<=1 && scrollY>40; if(v!==st){ st=v; c.classList.toggle("stuck",v); } };
+  addEventListener("scroll",f,{passive:true}); f(); })();
 /* ===== خط نيون أثناء اللمس ===== */
 (() => {
   const c=$("fx"), x=c.getContext("2d"), D=Math.min(window.devicePixelRatio||1,2);
