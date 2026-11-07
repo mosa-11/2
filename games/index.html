@@ -2,7 +2,7 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="theme-color" content="#05010f">
 <meta property="og:title" content="مركز مودرن | مكتبة ألعاب PS4">
 <meta property="og:description" content="أكثر من 11 ألف لعبة PS4 — اختار ألعابك ودز الطلب على الواتساب">
@@ -20,7 +20,7 @@
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html{touch-action:manipulation;-webkit-text-size-adjust:100%}
 html{background:var(--bg)}
-body{background:transparent;}
+body{background:transparent;touch-action:pan-x pan-y}
 html,body{color:var(--text);font-family:'Cairo',system-ui,sans-serif;min-height:100%}
 body{overflow-x:hidden;padding-bottom:110px}
 /* خلفية شبكة نيون */
@@ -176,7 +176,7 @@ body.order .card.sel{box-shadow:none;border-color:var(--line)}
 .row span{flex:1;direction:ltr;text-align:right;font-weight:700}
 .row button{background:none;border:1px solid var(--line);color:#ff6b8a;border-radius:9px;padding:3px 10px;cursor:pointer;font:700 13px 'Cairo'}
 .form{padding:14px 18px calc(18px + env(safe-area-inset-bottom));display:grid;gap:10px;border-top:1px solid var(--line)}
-.form input{padding:12px 14px;border-radius:12px;border:1px solid var(--line);background:var(--bg);color:var(--text);font:600 15px 'Cairo';outline:none}
+.form input{padding:12px 14px;border-radius:12px;border:1px solid var(--line);background:var(--bg);color:var(--text);font:600 16px 'Cairo';outline:none}
 .form input:focus{border-color:var(--cyan)}
 .form .acts{display:flex;gap:10px}
 .form .acts .wa{flex:1;justify-content:center}
@@ -248,7 +248,7 @@ let CONTACTS = [
   { name: "حيدر",  phone: "9647737378089", show: "07737378089" },
   { name: "مصطفى", phone: "9647728454842", show: "07728454842" },
 ];
-const STORE = "مركز مودرن";
+let STORE = "مركز مودرن";
 const PAGE = 48;   // عدد الألعاب اللي تنعرض كل مرة
 
 /* ======================= المكتبة (من ملف games.js) ======================= */
@@ -257,14 +257,16 @@ const TOPLIB = [["GTA V",2,"",271590,1,76],["Red Dead Redemption 2",2,"UP1004-CU
 const GAMES = [];
 const addRows = rows => rows.forEach(x=>{ const g={id:GAMES.length,n:x[0],c:CNAMES[x[1]]||x[1],cid:x[2]||"",s:x[3]||0,p:x[4]||0,z:x[5]||0}; GAMES.push(g); applyAdminTo(g); });
 /* ===== إعدادات صفحة الإدارة (admin.json) ===== */
-let ADM = {hidden:[],top:[],newGames:[],img:{},size:{},add:[],notice:"",contacts:null};
-let HID = new Set(), ADMTOP = new Set(), ADMNEW = new Set();
+let ADM = {hidden:[],deleted:[],hiddenCats:[],top:[],newGames:[],img:{},size:{},rename:{},cat:{},add:[],notice:"",contacts:null,store:"",devices:[]};
+let HID = new Set(), HIDCAT = new Set(), ADMTOP = new Set(), ADMNEW = new Set();
+const L = g => (ADM.rename && ADM.rename[g.n]) || g.n;
 function applyAdminTo(g){
+  if (ADM.cat && ADM.cat[g.n]) g.c = ADM.cat[g.n];
   if (ADMTOP.has(g.n)) g.p = 1;
   if (ADMNEW.has(g.n)) { g.nw = 1; g.p = 1; }
   if (ADM.size && ADM.size[g.n]) g.z = +ADM.size[g.n];
 }
-const vis = g => !HID.has(g.n);
+const vis = g => !HID.has(g.n) && !HIDCAT.has(g.c);
 addRows(TOPLIB);
 let fullLoaded = false;
 // صور خاصة: ضيف هنا اسم اللعبة ورابط صورتها إذا تريد تغيّر صورة
@@ -317,7 +319,7 @@ const ALIAS = [[/FIFA|EA SPORTS FC/,"fifa فيفا فيفه"],[/PES|eFootball|Pr
  [/Red Dead/,"ريد ديد rdr"],[/Mortal Kombat/,"مورتال mk"],[/Tekken/,"تيكن تكن"],[/Naruto/,"ناروتو"],[/Dragon Ball/,"دراغون بول دراجون"],
  [/Minecraft/,"ماين كرافت"],[/Need for Speed/,"نيد فور سبيد nfs"],[/Assassin/,"اساسن"],[/WWE/,"مصارعة"],[/Battlefield/,"باتلفيلد"],
  [/Crash/,"كراش"],[/Football|Soccer|FIFA|PES/,"طوبة كرة قدم"],[/UFC/,"يو اف سي"],[/Spider|Batman|Marvel/,"ابطال خارقين"]];
-function keys(g){ if(!g.k){ g.k=(g.n+" "+g.c+" "+ALIAS.filter(a=>a[0].test(g.n)).map(a=>a[1]).join(" ")).toLowerCase(); } return g.k; }
+function keys(g){ if(!g.k){ g.k=(g.n+" "+L(g)+" "+g.c+" "+ALIAS.filter(a=>a[0].test(g.n)).map(a=>a[1]).join(" ")).toLowerCase(); } return g.k; }
 
 const STEAM = "https://cdn.cloudflare.steamstatic.com/steam/apps/";
 const STEAM2 = "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/";
@@ -351,7 +353,7 @@ function placeholder(g){
   const c1 = NEON[g.id % NEON.length], c2 = NEON[(g.id+2) % NEON.length];
   return `<div class="ph" style="color:${c1};background:
     radial-gradient(circle at 30% 20%, ${c1}33, transparent 60%),
-    radial-gradient(circle at 80% 90%, ${c2}33, transparent 55%), #0d0720">${esc(g.n)}</div>`;
+    radial-gradient(circle at 80% 90%, ${c2}33, transparent 55%), #0d0720">${esc(L(g))}</div>`;
 }
 function setImg(img, i){
   const g = GAMES[img.dataset.id], src = sources(g), card = img.closest(".card");
@@ -373,7 +375,7 @@ function nextSrc(img){
 
 function renderCats(){
   const V = GAMES.filter(vis), hasNew = V.some(g=>g.nw);
-  const cats = [TOP, ...(hasNew?[NEW]:[]), ALL, ...CNAMES, ...[...new Set(V.map(g=>g.c))].filter(c=>!CNAMES.includes(c))];
+  const cats = [TOP, ...(hasNew?[NEW]:[]), ALL, ...CNAMES.filter(c=>!HIDCAT.has(c)), ...[...new Set(V.map(g=>g.c))].filter(c=>!CNAMES.includes(c))];
   $("cats").innerHTML = cats.map(c => {
     const n = c===ALL ? V.length : c===TOP ? V.filter(g=>g.p).length : c===NEW ? V.filter(g=>g.nw).length : V.filter(g=>g.c===c).length;
     return `<button class="cat ${c===cat?'on':''}" data-c="${c}">${c} <small>(${fmt(n)})</small></button>`;
@@ -382,13 +384,13 @@ function renderCats(){
 function cardHTML(g,k){
   const src = sources(g);
   const media = src.length
-    ? `<img loading="lazy" alt="${esc(g.n)}" data-id="${g.id}" data-i="0" onerror="nextSrc(this)">`
+    ? `<img loading="lazy" alt="${esc(L(g))}" data-id="${g.id}" data-i="0" onerror="nextSrc(this)">`
     : placeholder(g);
   return `<div class="card ${sel.has(g.id)?'sel':''}" data-id="${g.id}" style="animation-delay:${(k%12)*25}ms">
     ${media}
     <div class="tick"><svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>
     ${gsize(g) ? `<div class="gb">≈ ${fmtGB(gsize(g))}GB</div>` : ""}${g.nw ? `<div class="nw">🆕 جديد</div>` : ""}
-    <div class="shade"><div class="name">${esc(g.n)}</div><div class="chip">${g.c}</div></div>
+    <div class="shade"><div class="name">${esc(L(g))}</div><div class="chip">${g.c}</div></div>
   </div>`;
 }
 const ORDER = (()=>{ try{ const o=new URLSearchParams(location.search).get("order"); return o ? o.split("|").filter(Boolean) : null; }catch(e){ return null; } })();
@@ -487,7 +489,7 @@ function updateBar(){
   const {total} = sizeInfo();
   $("barCount").textContent = `${n} ${n===1?'لعبة مختارة':'ألعاب مختارة'}` + (total ? ` • ≈ ${fmtGB(total)}GB` : "");
   renderMeter();
-  $("list").innerHTML = [...sel].map((id,i)=>{ const g=GAMES[id], v=gsize(g); return `<div class="row"><b>${i+1}</b><span>${esc(g.n)}</span><small>${v?`≈ ${fmtGB(v)}GB`:(pending.has(id)?"⏳":"؟")}</small><button data-rm="${id}">حذف</button></div>`; }).join("")
+  $("list").innerHTML = [...sel].map((id,i)=>{ const g=GAMES[id], v=gsize(g); return `<div class="row"><b>${i+1}</b><span>${esc(L(g))}</span><small>${v?`≈ ${fmtGB(v)}GB`:(pending.has(id)?"⏳":"؟")}</small><button data-rm="${id}">حذف</button></div>`; }).join("")
     || `<p style="color:var(--muted);padding:20px 0;text-align:center">ما اخترت أي لعبة بعد</p>`;
 }
 function toggle(id){
@@ -498,7 +500,7 @@ function toggle(id){
   save(); updateBar();
 }
 function openSheet(v){ $("sheet").classList.toggle("show",v); $("sheetBg").classList.toggle("show",v); }
-const DEVICES = ["PS4 Fat","PS4 Slim","PS4 Pro"];
+let DEVICES = ["PS4 Fat","PS4 Slim","PS4 Pro"];
 let dev = -1;
 try{ const v=localStorage.getItem("ys_dev"); if(v!==null && DEVICES[+v]) dev=+v; const n=localStorage.getItem("ys_name"); if(n) setTimeout(()=>{$("cname").value=n},0); }catch(e){}
 function renderDev(){ $("dev").innerHTML = DEVICES.map((d,i)=>`<button data-i="${i}" class="${i===dev?'on':''}">${d}</button>`).join(""); }
@@ -533,7 +535,7 @@ function send(){
   try{ localStorage.setItem("ys_name", name); }catch(e){}
   const cp = capacity(), {total, unknown} = sizeInfo();
   let msg = `مرحباً ${c.name} 👋 (${STORE})\n\n👤 الجهاز باسم: ${name}\n🎮 نوع الجهاز: ${DEVICES[dev]}\n💾 الهارد: ${cp.label}\n\nأريد تنزيل هذه الألعاب:\n\n`;
-  msg += [...sel].map((id,i)=>{ const v=gsize(GAMES[id]); return `${i+1}- ${GAMES[id].n}${v?`  (≈${fmtGB(v)}GB)`:""}`; }).join("\n");
+  msg += [...sel].map((id,i)=>{ const v=gsize(GAMES[id]); return `${i+1}- ${L(GAMES[id])}${v?`  (≈${fmtGB(v)}GB)`:""}`; }).join("\n");
   msg += `\n\nعدد الألعاب: ${sel.size}\n📦 الحجم الكلي: ≈ ${fmtGB(total)}GB${unknown?` (+${unknown} غير معروف)`:""}`;
   if (total > cp.cap) msg += `\n⚠️ الحجم أكبر من المساحة بـ ≈ ${fmtGB(total-cp.cap)}GB`;
   if (note) msg += `\n📝 ملاحظة: ${note}`;
@@ -585,7 +587,7 @@ async function makeSheet(games, page, pages){
       } else { const w=th*r; x.drawImage(bm,cx+(tw-w)/2,cy,w,th); }
     } else {
       x.fillStyle=NEON[i%NEON.length]; x.font="800 30px Cairo, sans-serif";
-      wrap(x,g.n,tw-40,5).forEach((l,j,a)=>x.fillText(l,cx+tw/2,cy+th/2-(a.length-1)*20+j*40));
+      wrap(x,L(g),tw-40,5).forEach((l,j,a)=>x.fillText(l,cx+tw/2,cy+th/2-(a.length-1)*20+j*40));
     }
     x.restore();
     x.strokeStyle="#39ff88"; x.lineWidth=4; x.shadowColor="#39ff88"; x.shadowBlur=14;
@@ -594,7 +596,7 @@ async function makeSheet(games, page, pages){
     x.fillStyle="#39ff88"; x.beginPath(); x.arc(cx+tw-30,cy+30,22,0,7); x.fill();
     x.fillStyle="#05010f"; x.font="900 24px Cairo, sans-serif"; x.fillText(String((page-1)*24+i+1),cx+tw-30,cy+39);
     x.fillStyle="#fff"; x.font="700 24px Cairo, sans-serif"; x.direction="ltr";
-    wrap(x,g.n,tw-10,2).forEach((l,j)=>x.fillText(l,cx+tw/2,cy+th+32+j*30)); x.direction="rtl";
+    wrap(x,L(g),tw-10,2).forEach((l,j)=>x.fillText(l,cx+tw/2,cy+th+32+j*30)); x.direction="rtl";
   });
   return new Promise(r=>cv.toBlob(r,"image/jpeg",.86));
 }
@@ -642,15 +644,19 @@ $("clearAll").onclick = () => { sel.clear(); save(); render(); updateBar(); };
 if (ORDER){ document.body.classList.add("order"); $("browseAll").href = location.origin + location.pathname; }
 function applyAdmin(a){
   ADM = Object.assign(ADM, a||{});
-  HID = new Set(ADM.hidden||[]); ADMTOP = new Set(ADM.top||[]); ADMNEW = new Set(ADM.newGames||[]);
+  HID = new Set([...(ADM.hidden||[]), ...(ADM.deleted||[])]); HIDCAT = new Set(ADM.hiddenCats||[]); ADMTOP = new Set(ADM.top||[]); ADMNEW = new Set(ADM.newGames||[]);
   if (Array.isArray(ADM.contacts) && ADM.contacts.length) CONTACTS = ADM.contacts.map(c=>({name:c.name, phone:c.phone, show:c.show||("0"+String(c.phone).replace(/^964/,""))}));
   Object.entries(ADM.img||{}).forEach(([k,v])=>{ if(v) CUSTOM_LC[k.toLowerCase()] = v; });
-  if (ADM.add && ADM.add.length) addRows(ADM.add.map(x=>[x.n, CNAMES.indexOf(x.c)>=0?CNAMES.indexOf(x.c):(x.c||"ألعاب منوعة"), "", 0, 1, +x.size||0]).filter(r=>!GAMES.some(g=>g.n===r[0])));
+  if (ADM.add && ADM.add.length) addRows(ADM.add.map(x=>[x.n, CNAMES.indexOf(x.c)>=0?CNAMES.indexOf(x.c):(x.c||"ألعاب منوعة"), "", 0, x.top?1:0, +x.size||0]).filter(r=>!GAMES.some(g=>g.n===r[0])));
   GAMES.forEach(applyAdminTo);
+  if (ADM.store){ STORE = ADM.store; document.title = STORE + " | مكتبة ألعاب PS4"; const h=document.querySelector(".logo"); if(h){ const w=STORE.trim().split(/\s+/); h.innerHTML = w.length>1 ? esc(w[0])+" <span>"+esc(w.slice(1).join(" "))+"</span>" : esc(STORE); } }
+  if (Array.isArray(ADM.devices) && ADM.devices.length){ DEVICES = ADM.devices; if (dev >= DEVICES.length) dev = -1; }
   if (ADM.notice){ $("notice").textContent = ADM.notice; $("notice").style.display="block"; }
   if (who >= CONTACTS.length) who = -1;
 }
 function start(){ renderWho(); renderDev(); renderHard(); renderCats(); render(); updateBar(); }
+// منع التكبير والتصغير
+['gesturestart','gesturechange'].forEach(ev=>document.addEventListener(ev,e=>e.preventDefault(),{passive:false}));
 let started = false; const go1 = () => { if (!started){ started = true; start(); } };
 fetch("admin.json?t=" + Date.now(), {cache:"no-store"}).then(r=>r.ok?r.json():null).then(a=>{ if(a) applyAdmin(a); }).catch(()=>{}).finally(go1);
 setTimeout(go1, 1500);
