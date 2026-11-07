@@ -199,8 +199,26 @@ const CUSTOM_IMG = {
  "inFAMOUS Second Son": WIKI+"3/34/Infamous_second_son_boxart.jpg",
  "The Order: 1886": "https://store.playstation.com/store/api/chihiro/00_09_000/container/GB/en/999/EP9000-CUSA00076_00-TO1886GAME000000/image?w=400&h=400",
  "Ratchet & Clank": "https://store.playstation.com/store/api/chihiro/00_09_000/container/AE/en/999/EP9000-CUSA01073_00-RCPS400000000000/image?w=400&h=400",
+ "EA SPORTS FC 26": WIKI+"2/2f/FC_26_Cover.png",
+ "FIFA 14": WIKI+"e/e3/FIFA_14.jpeg",
+ "FIFA 15": WIKI+"2/23/FIFA_15_Cover_Art.jpg",
+ "FIFA 16": WIKI+"2/27/FIFA_16_cover.jpg",
+ "FIFA 17": WIKI+"0/08/FIFA_17_cover.jpeg",
+ "FIFA 18": WIKI+"d/d4/FIFA18cover.png",
+ "FIFA 19": WIKI+"7/71/FIFA_19_cover.jpg",
+ "FIFA 20": WIKI+"2/21/FIFA_20_Standard_Edition_Cover.jpg",
+ "FIFA 21": WIKI+"b/bb/FIFA_21_Standard_Edition_Cover.jpg",
+ "FIFA 22": WIKI+"6/6c/FIFA_22_Cover.jpg",
+ "FIFA 23": WIKI+"a/a6/FIFA_23_Cover.jpg",
+ "Pro Evolution Soccer 2015": WIKI+"f/f2/Pro_Evolution_Soccer_2015_cover_art.png",
+ "Pro Evolution Soccer 2016": WIKI+"3/38/Pro_Evolution_Soccer_2016_cover_art.jpg",
+ "Pro Evolution Soccer 2017": WIKI+"f/f7/Pro_Evolution_2017_Cover_Art.png",
+ "Pro Evolution Soccer 2018": WIKI+"f/f7/Pro_Evolution_Soccer_2018_Cover_Art.png",
+ "Pro Evolution Soccer 2019": WIKI+"c/cf/Pro_Evolution_Soccer_2019_Cover_Art.jpg",
+ "eFootball PES 2020": WIKI+"2/2b/Pro_Evolution_Soccer_2020.jpg",
  /* "Minecraft": "images/minecraft.jpg", */
 };
+const CUSTOM_LC = Object.fromEntries(Object.entries(CUSTOM_IMG).map(([k,v])=>[k.toLowerCase(),v]));
 
 const ALIAS = [[/FIFA|EA SPORTS FC/,"fifa فيفا فيفه"],[/PES|eFootball|Pro Evolution/,"pes بيس"],[/Call of Duty/,"cod كول اوف ديوتي كود"],
  [/Grand Theft Auto|GTA/,"جاتا gta"],[/Resident Evil/,"re ريزدنت رزدنت"],[/Spider-Man/,"سبايدر مان spiderman"],[/God of War/,"جود اوف وار"],
@@ -218,7 +236,7 @@ function psImgs(cid){
 }
 function sources(g){
   const l=[];
-  if (CUSTOM_IMG[g.n]) l.push([CUSTOM_IMG[g.n],0]);
+  const ci = CUSTOM_LC[g.n.toLowerCase()]; if (ci) l.push([ci, ci.includes("playstation.com")?1:0]);
   if (g.s) l.push([STEAM+g.s+"/library_600x900.jpg",0],[STEAM2+g.s+"/library_600x900.jpg",0]);
   if (g.cid) psImgs(g.cid).forEach(u=>l.push([u,1]));
   if (g.s) l.push([STEAM+g.s+"/header.jpg",1]);
