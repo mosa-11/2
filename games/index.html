@@ -84,6 +84,10 @@ main{max-width:1200px;margin:0 auto;padding:6px 14px}
 .more{grid-column:1/-1;height:40px}
 #fx{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:70}
 .who-t{font-weight:800;font-size:14px;color:var(--muted)}
+.dev{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.dev button{border:1px solid var(--line);background:var(--bg);color:var(--text);border-radius:12px;padding:10px 4px;font:800 14px 'Cairo';cursor:pointer;transition:.15s;direction:ltr}
+.dev button.on{border-color:var(--pink);background:rgba(255,43,214,.12);box-shadow:0 0 14px rgba(255,43,214,.45);color:#fff}
+.miss{border-color:#ff4d6d!important;box-shadow:0 0 12px rgba(255,77,109,.5)!important}
 .who{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .person{border:1px solid var(--line);background:var(--bg);color:var(--text);border-radius:14px;padding:10px;cursor:pointer;font-family:'Cairo';display:grid;gap:2px;transition:.15s}
 .person b{font-size:17px}.person small{color:var(--muted);direction:ltr}
@@ -182,8 +186,11 @@ footer a{color:var(--cyan);text-decoration:none}
   <h3>الألعاب المختارة <button id="closeSheet" aria-label="إغلاق">×</button></h3>
   <div class="list" id="list"></div>
   <div class="form">
-    <input id="cname" placeholder="اسمك (اختياري)">
-    <input id="cnote" placeholder="ملاحظة: نوع الجهاز، سعة الهارد... (اختياري)">
+    <div class="who-t">👤 الجهاز باسم منو؟</div>
+    <input id="cname" placeholder="اسم صاحب الجهاز" autocomplete="name">
+    <div class="who-t">🎮 نوع الجهاز:</div>
+    <div class="dev" id="dev"></div>
+    <input id="cnote" placeholder="ملاحظة: سعة الهارد، أو أي شي ثاني (اختياري)">
     <div class="who-t">اختار منو ترسله الطلب:</div>
     <div class="who" id="who"></div>
     <div class="acts">
@@ -377,6 +384,16 @@ function toggle(id){
   save(); updateBar();
 }
 function openSheet(v){ $("sheet").classList.toggle("show",v); $("sheetBg").classList.toggle("show",v); }
+const DEVICES = ["PS4 Fat","PS4 Slim","PS4 Pro"];
+let dev = -1;
+try{ const v=localStorage.getItem("ys_dev"); if(v!==null && DEVICES[+v]) dev=+v; const n=localStorage.getItem("ys_name"); if(n) setTimeout(()=>{$("cname").value=n},0); }catch(e){}
+function renderDev(){ $("dev").innerHTML = DEVICES.map((d,i)=>`<button data-i="${i}" class="${i===dev?'on':''}">${d}</button>`).join(""); }
+function needInfo(){
+  const nm=$("cname").value.trim(); let bad=false;
+  $("cname").classList.toggle("miss", !nm); $("dev").classList.toggle("miss", dev<0);
+  if (!nm || dev<0){ $("tip").textContent = !nm ? "☝️ اكتب اسم صاحب الجهاز" : "☝️ اختار نوع الجهاز"; $("tip").className="tip"; (!nm?$("cname"):$("dev")).scrollIntoView({block:"center",behavior:"smooth"}); bad=true; }
+  return bad;
+}
 let who = -1;
 try{ const v = localStorage.getItem("ys_who"); if (v !== null && CONTACTS[+v]) who = +v; }catch(e){}
 function renderWho(){
@@ -393,14 +410,14 @@ function orderUrl(){
   return location.origin + location.pathname + "?order=" + encodeURIComponent(selNames().join("|"));
 }
 function send(){
-  if (!sel.size || needWho()) return;
+  if (!sel.size || needInfo() || needWho()) return;
   const c = CONTACTS[who];
   const name = $("cname").value.trim(), note = $("cnote").value.trim();
-  let msg = `مرحباً ${c.name} 👋 (${STORE})\nأريد تنزيل هذه الألعاب على PS4:\n\n`;
+  try{ localStorage.setItem("ys_name", name); }catch(e){}
+  let msg = `مرحباً ${c.name} 👋 (${STORE})\n\n👤 الجهاز باسم: ${name}\n🎮 نوع الجهاز: ${DEVICES[dev]}\n\nأريد تنزيل هذه الألعاب:\n\n`;
   msg += selNames().map((n,i)=>`${i+1}- ${n}`).join("\n");
   msg += `\n\nعدد الألعاب: ${sel.size}`;
-  if (name) msg += `\nالاسم: ${name}`;
-  if (note) msg += `\nملاحظة: ${note}`;
+  if (note) msg += `\n📝 ملاحظة: ${note}`;
   msg += `\n\n📸 صور الألعاب المختارة:\n${orderUrl()}`;
   $("tip").textContent = "✅ بعد ما ترسل القائمة، ارجع هنا ودوس «إرسال صور الألعاب» واختار محادثة " + c.name;
   $("tip").className = "tip ok";
@@ -431,8 +448,8 @@ async function makeSheet(games, page, pages){
   x.textAlign="center"; x.direction="rtl";
   x.shadowColor="#ff2bd6"; x.shadowBlur=28; x.fillStyle="#fff"; x.font="900 76px Cairo, sans-serif"; x.fillText(STORE, W/2, 95);
   x.shadowColor="#00f0ff"; x.shadowBlur=14; x.fillStyle="#00f0ff"; x.font="800 34px Cairo, sans-serif";
-  const c = CONTACTS[who]||{name:""}; const nm=$("cname").value.trim();
-  x.fillText(`طلب ألعاب PS4 — ${sel.size} لعبة${nm?" — "+nm:""}${pages>1?`  (${page}/${pages})`:""}`, W/2, 155);
+  const nm=$("cname").value.trim(), dv=DEVICES[dev]||"PS4";
+  x.fillText(`${nm?nm+" — ":""}${dv} — ${sel.size} لعبة${pages>1?`  (${page}/${pages})`:""}`, W/2, 155);
   x.shadowBlur=0;
   const covers = new Array(games.length); let k=0;
   await Promise.all(Array.from({length:6}, async()=>{ while(k<games.length){ const i=k++; covers[i]=await coverOf(games[i]); } }));
@@ -463,7 +480,7 @@ async function makeSheet(games, page, pages){
   return new Promise(r=>cv.toBlob(r,"image/jpeg",.86));
 }
 async function sendImages(){
-  if (!sel.size || needWho()) return;
+  if (!sel.size || needInfo() || needWho()) return;
   const btn=$("sendImg"), old=btn.textContent; btn.disabled=true;
   try{
     await document.fonts.ready;
@@ -496,11 +513,13 @@ $("closeSheet").onclick = $("sheetBg").onclick = () => openSheet(false);
 $("sendQuick").onclick = () => openSheet(true);
 $("sendFull").onclick = send;
 $("sendImg").onclick = sendImages;
+$("dev").addEventListener("click", e => { const b=e.target.closest("button"); if(!b) return; dev=+b.dataset.i; try{localStorage.setItem("ys_dev",dev)}catch(_){}; $("dev").classList.remove("miss"); renderDev(); });
+$("cname").addEventListener("input", () => $("cname").classList.remove("miss"));
 $("who").addEventListener("click", e => { const b=e.target.closest(".person"); if(!b) return; who=+b.dataset.i; try{localStorage.setItem("ys_who",who)}catch(_){}; renderWho(); $("tip").textContent="أول شي دز القائمة، بعدين ارجع هنا ودز صور الألعاب لنفس المحادثة"; $("tip").className="tip"; });
 $("clearAll").onclick = () => { sel.clear(); save(); render(); updateBar(); };
 
 if (ORDER){ document.body.classList.add("order"); $("browseAll").href = location.origin + location.pathname; }
-renderWho(); renderCats(); render(); updateBar();
+renderWho(); renderDev(); renderCats(); render(); updateBar();
 /* ===== خط نيون أثناء اللمس ===== */
 (() => {
   const c=$("fx"), x=c.getContext("2d"), D=Math.min(window.devicePixelRatio||1,2);
