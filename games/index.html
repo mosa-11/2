@@ -4,6 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#05010f">
+<meta property="og:title" content="مركز مودرن | مكتبة ألعاب PS4">
+<meta property="og:description" content="أكثر من 11 ألف لعبة PS4 — اختار ألعابك ودز الطلب على الواتساب">
+<meta property="og:image" content="https://mosa-11.github.io/2/games/og.png">
+<meta property="og:type" content="website">
 <title>مركز مودرن | مجلة ألعاب PS4</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -14,6 +18,7 @@
   --cyan:#00f0ff; --pink:#ff2bd6; --lime:#39ff88; --text:#eef3ff; --muted:#9a93c4;
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html{touch-action:manipulation;-webkit-text-size-adjust:100%}
 html,body{background:var(--bg);color:var(--text);font-family:'Cairo',system-ui,sans-serif;min-height:100%}
 body{overflow-x:hidden;padding-bottom:110px}
 /* خلفية شبكة نيون */
@@ -58,7 +63,11 @@ main{max-width:1200px;margin:0 auto;padding:6px 14px}
 @media(min-width:1150px){.grid{grid-template-columns:repeat(5,1fr)}}
 
 .card{position:relative;aspect-ratio:2/3;border-radius:16px;overflow:hidden;cursor:pointer;background:var(--panel);
-  border:1px solid var(--line);transition:transform .25s,box-shadow .25s,border-color .25s;animation:in .5s both}
+  border:1px solid var(--line);transition:transform .15s,box-shadow .15s,border-color .15s;animation:in .35s both;user-select:none;-webkit-user-select:none}
+.card:active{transform:scale(.96)}
+.card.pop{animation:pop .32s ease}
+@keyframes pop{40%{transform:scale(1.05)}100%{transform:none}}
+@media (hover:none){.card:hover{transform:none;box-shadow:none}.card:hover img{transform:none}}
 @keyframes in{from{opacity:0;transform:translateY(14px)}}
 .card:hover{transform:translateY(-4px);border-color:rgba(0,240,255,.6);box-shadow:0 10px 30px rgba(0,240,255,.18)}
 .card img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .5s}
@@ -73,9 +82,28 @@ main{max-width:1200px;margin:0 auto;padding:6px 14px}
 .card.sq::before{content:"";position:absolute;inset:-20px;background:var(--b) center/cover;filter:blur(18px) brightness(.55)}
 .card.sq img{position:relative;object-fit:contain}
 .more{grid-column:1/-1;height:40px}
+#fx{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:70}
+.who-t{font-weight:800;font-size:14px;color:var(--muted)}
+.who{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.person{border:1px solid var(--line);background:var(--bg);color:var(--text);border-radius:14px;padding:10px;cursor:pointer;font-family:'Cairo';display:grid;gap:2px;transition:.15s}
+.person b{font-size:17px}.person small{color:var(--muted);direction:ltr}
+.person.on{border-color:var(--cyan);background:rgba(0,240,255,.1);box-shadow:0 0 16px rgba(0,240,255,.45)}
+.person.on b{color:var(--cyan);text-shadow:0 0 10px var(--cyan)}
+.who.shake{animation:shake .4s}@keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.btn.img{width:100%;justify-content:center;background:linear-gradient(90deg,var(--pink),#9d6bff);color:#fff;box-shadow:0 0 18px rgba(255,43,214,.5)}
+.btn:disabled{opacity:.6}
+.tip{color:var(--muted);font-size:12.5px;text-align:center;line-height:1.6}
+.tip.ok{color:var(--lime)}
+.order-head{display:none;text-align:center;margin:6px 0 14px}
+.order-head h2{font-size:22px;color:var(--cyan);text-shadow:0 0 12px var(--cyan)}
+.order-head a{color:var(--pink);font-weight:800;text-decoration:none}
+body.order .controls,body.order .bar{display:none}
+body.order .order-head{display:block}
+body.order .tick{display:none}
+body.order .card.sel{box-shadow:none;border-color:var(--line)}
 .chip{display:inline-block;margin-top:4px;font-size:11px;color:var(--cyan);opacity:.9}
 .tick{position:absolute;top:9px;right:9px;width:32px;height:32px;border-radius:50%;border:2px solid rgba(255,255,255,.75);
-  background:rgba(5,1,15,.55);display:grid;place-items:center;transition:.2s;backdrop-filter:blur(3px)}
+  background:rgba(5,1,15,.6);display:grid;place-items:center;transition:.15s}
 .tick svg{width:17px;height:17px;stroke:#05010f;stroke-width:3.5;opacity:0;transition:.2s}
 .card.sel{border-color:var(--lime);box-shadow:0 0 0 2px var(--lime),0 0 26px rgba(57,255,136,.45)}
 .card.sel .tick{background:var(--lime);border-color:var(--lime);box-shadow:0 0 14px var(--lime)}
@@ -120,6 +148,7 @@ footer a{color:var(--cyan);text-decoration:none}
 </head>
 <body>
 <div class="bg"></div>
+<canvas id="fx"></canvas>
 
 <header>
   <h1 class="logo">مركز <span>مودرن</span></h1>
@@ -136,6 +165,7 @@ footer a{color:var(--cyan);text-decoration:none}
 </div>
 
 <main>
+  <div class="order-head"><h2>📋 طلب زبون</h2><p id="orderInfo"></p><a id="browseAll" href="./">تصفّح المكتبة كاملة ←</a></div>
   <div class="count" id="count"></div>
   <div class="grid" id="grid"></div>
 </main>
@@ -154,17 +184,24 @@ footer a{color:var(--cyan);text-decoration:none}
   <div class="form">
     <input id="cname" placeholder="اسمك (اختياري)">
     <input id="cnote" placeholder="ملاحظة: نوع الجهاز، سعة الهارد... (اختياري)">
+    <div class="who-t">اختار منو ترسله الطلب:</div>
+    <div class="who" id="who"></div>
     <div class="acts">
       <button class="btn ghost" id="clearAll">مسح الكل</button>
-      <button class="btn wa" id="sendFull">إرسال الطلب على الواتساب</button>
+      <button class="btn wa" id="sendFull">١- إرسال القائمة بالواتساب</button>
     </div>
+    <button class="btn img" id="sendImg">٢- إرسال صور الألعاب 🖼️</button>
+    <div class="tip" id="tip">أول شي دز القائمة، بعدين ارجع هنا ودز صور الألعاب لنفس المحادثة</div>
   </div>
 </div>
 
 <script>
 /* ======================= إعدادات المحل ======================= */
-// رقم الواتساب اللي توصله الطلبات (بالصيغة الدولية بدون +)
-const WHATSAPP = "9647728454842";
+// الأشخاص اللي توصلهم الطلبات (الرقم بالصيغة الدولية بدون +)
+const CONTACTS = [
+  { name: "حيدر",  phone: "9647737378089", show: "07737378089" },
+  { name: "مصطفى", phone: "9647728454842", show: "07728454842" },
+];
 const STORE = "مركز مودرن";
 const PAGE = 48;   // عدد الألعاب اللي تنعرض كل مرة
 
@@ -297,8 +334,16 @@ function cardHTML(g,k){
     <div class="shade"><div class="name">${esc(g.n)}</div><div class="chip">${g.c}</div></div>
   </div>`;
 }
+const ORDER = (()=>{ try{ const o=new URLSearchParams(location.search).get("order"); return o ? o.split("|").filter(Boolean) : null; }catch(e){ return null; } })();
 function render(){
   const term = q.trim().toLowerCase();
+  if (ORDER){
+    const byName = new Map(GAMES.map(g=>[g.n,g]));
+    items = ORDER.map(n=>byName.get(n)).filter(Boolean);
+    shown = 0; $("grid").innerHTML = "";
+    $("orderInfo").textContent = `${ORDER.length} لعبة` + (items.length<ORDER.length && !fullLoaded ? " — جاري التحميل..." : "");
+    $("count").textContent = ""; more(); return;
+  }
   items = GAMES.filter(g => (cat===ALL || (cat===TOP ? g.p : g.c===cat)) && (!term || keys(g).includes(term)));
   if (cat===ALL || term) items.sort((a,b)=>b.p-a.p);   // المشهورة أولاً
   shown = 0;
@@ -326,24 +371,123 @@ function updateBar(){
 }
 function toggle(id){
   sel.has(id) ? sel.delete(id) : sel.add(id);
-  document.querySelector(`.card[data-id="${id}"]`)?.classList.toggle("sel", sel.has(id));
+  const el = document.querySelector(`.card[data-id="${id}"]`);
+  if (el){ el.classList.toggle("sel", sel.has(id)); el.classList.remove("pop"); void el.offsetWidth; el.classList.add("pop"); }
   if (navigator.vibrate) navigator.vibrate(12);
   save(); updateBar();
 }
 function openSheet(v){ $("sheet").classList.toggle("show",v); $("sheetBg").classList.toggle("show",v); }
+let who = -1;
+try{ const v = localStorage.getItem("ys_who"); if (v !== null && CONTACTS[+v]) who = +v; }catch(e){}
+function renderWho(){
+  $("who").innerHTML = CONTACTS.map((c,i)=>`<button class="person ${i===who?'on':''}" data-i="${i}"><b>${c.name}</b><small>${c.show}</small></button>`).join("");
+}
+function needWho(){
+  if (who >= 0) return false;
+  const w=$("who"); w.classList.remove("shake"); void w.offsetWidth; w.classList.add("shake");
+  $("tip").textContent = "☝️ اختار حيدر أو مصطفى أول"; $("tip").className="tip";
+  return true;
+}
+const selNames = () => [...sel].map(id=>GAMES[id].n);
+function orderUrl(){
+  return location.origin + location.pathname + "?order=" + encodeURIComponent(selNames().join("|"));
+}
 function send(){
-  if (!sel.size) return;
+  if (!sel.size || needWho()) return;
+  const c = CONTACTS[who];
   const name = $("cname").value.trim(), note = $("cnote").value.trim();
-  let msg = `مرحباً ${STORE} 👋\nأريد تنزيل هذه الألعاب على PS4:\n\n`;
-  msg += [...sel].map((id,i)=>`${i+1}- ${GAMES[id].n}`).join("\n");
+  let msg = `مرحباً ${c.name} 👋 (${STORE})\nأريد تنزيل هذه الألعاب على PS4:\n\n`;
+  msg += selNames().map((n,i)=>`${i+1}- ${n}`).join("\n");
   msg += `\n\nعدد الألعاب: ${sel.size}`;
   if (name) msg += `\nالاسم: ${name}`;
   if (note) msg += `\nملاحظة: ${note}`;
-  window.location.href = `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(msg)}`;
+  msg += `\n\n📸 صور الألعاب المختارة:\n${orderUrl()}`;
+  $("tip").textContent = "✅ بعد ما ترسل القائمة، ارجع هنا ودوس «إرسال صور الألعاب» واختار محادثة " + c.name;
+  $("tip").className = "tip ok";
+  window.location.href = `https://wa.me/${c.phone}?text=${encodeURIComponent(msg)}`;
+}
+
+/* ===== صورة مجمّعة للألعاب المختارة (تنرسل بالواتساب) ===== */
+function loadBitmap(url){
+  return new Promise(res=>{
+    const ctrl = new AbortController(); const tm = setTimeout(()=>{ctrl.abort(); res(null)}, 9000);
+    fetch(url,{mode:"cors",signal:ctrl.signal}).then(r=>r.ok?r.blob():null).then(b=>b&&b.size>500?createImageBitmap(b):null)
+      .then(bm=>{clearTimeout(tm); res(bm)}).catch(()=>{clearTimeout(tm); res(null)});
+  });
+}
+async function coverOf(g){ for (const [u] of sources(g)){ const bm = await loadBitmap(u); if (bm) return bm; } return null; }
+function wrap(x, text, maxW, maxLines){
+  const words = text.split(" "), lines=[]; let cur="";
+  for (const w of words){ const t = cur ? cur+" "+w : w; if (x.measureText(t).width > maxW && cur){ lines.push(cur); cur=w; } else cur=t; }
+  if (cur) lines.push(cur);
+  if (lines.length > maxLines){ lines.length = maxLines; lines[maxLines-1] += "…"; }
+  return lines;
+}
+async function makeSheet(games, page, pages){
+  const cols=3, tw=330, th=495, gap=22, pad=36, head=200, nameH=78;
+  const rows=Math.ceil(games.length/cols), W=pad*2+cols*tw+(cols-1)*gap, H=head+rows*(th+nameH+gap)+pad;
+  const cv=document.createElement("canvas"); cv.width=W; cv.height=H; const x=cv.getContext("2d");
+  const bg=x.createLinearGradient(0,0,W,H); bg.addColorStop(0,"#0a0320"); bg.addColorStop(1,"#05010f"); x.fillStyle=bg; x.fillRect(0,0,W,H);
+  x.textAlign="center"; x.direction="rtl";
+  x.shadowColor="#ff2bd6"; x.shadowBlur=28; x.fillStyle="#fff"; x.font="900 76px Cairo, sans-serif"; x.fillText(STORE, W/2, 95);
+  x.shadowColor="#00f0ff"; x.shadowBlur=14; x.fillStyle="#00f0ff"; x.font="800 34px Cairo, sans-serif";
+  const c = CONTACTS[who]||{name:""}; const nm=$("cname").value.trim();
+  x.fillText(`طلب ألعاب PS4 — ${sel.size} لعبة${nm?" — "+nm:""}${pages>1?`  (${page}/${pages})`:""}`, W/2, 155);
+  x.shadowBlur=0;
+  const covers = new Array(games.length); let k=0;
+  await Promise.all(Array.from({length:6}, async()=>{ while(k<games.length){ const i=k++; covers[i]=await coverOf(games[i]); } }));
+  games.forEach((g,i)=>{
+    const cx=pad+(cols-1-(i%cols))*(tw+gap), cy=head+Math.floor(i/cols)*(th+nameH+gap);
+    x.save(); x.beginPath(); x.roundRect(cx,cy,tw,th,22); x.clip();
+    x.fillStyle="#0d0720"; x.fillRect(cx,cy,tw,th);
+    const bm=covers[i];
+    if (bm){
+      const r=bm.width/bm.height;
+      if (r>0.8){ // صورة مربعة/عريضة: خلفية مغبشة + الصورة كاملة
+        x.filter="blur(16px) brightness(.5)"; x.drawImage(bm,cx-40,cy-40,tw+80,th+80); x.filter="none";
+        const h=tw/r; x.drawImage(bm,cx,cy+(th-h)/2,tw,h);
+      } else { const w=th*r; x.drawImage(bm,cx+(tw-w)/2,cy,w,th); }
+    } else {
+      x.fillStyle=NEON[i%NEON.length]; x.font="800 30px Cairo, sans-serif";
+      wrap(x,g.n,tw-40,5).forEach((l,j,a)=>x.fillText(l,cx+tw/2,cy+th/2-(a.length-1)*20+j*40));
+    }
+    x.restore();
+    x.strokeStyle="#39ff88"; x.lineWidth=4; x.shadowColor="#39ff88"; x.shadowBlur=14;
+    x.beginPath(); x.roundRect(cx,cy,tw,th,22); x.stroke(); x.shadowBlur=0;
+    // رقم اللعبة
+    x.fillStyle="#39ff88"; x.beginPath(); x.arc(cx+tw-30,cy+30,22,0,7); x.fill();
+    x.fillStyle="#05010f"; x.font="900 24px Cairo, sans-serif"; x.fillText(String((page-1)*24+i+1),cx+tw-30,cy+39);
+    x.fillStyle="#fff"; x.font="700 24px Cairo, sans-serif"; x.direction="ltr";
+    wrap(x,g.n,tw-10,2).forEach((l,j)=>x.fillText(l,cx+tw/2,cy+th+32+j*30)); x.direction="rtl";
+  });
+  return new Promise(r=>cv.toBlob(r,"image/jpeg",.86));
+}
+async function sendImages(){
+  if (!sel.size || needWho()) return;
+  const btn=$("sendImg"), old=btn.textContent; btn.disabled=true;
+  try{
+    await document.fonts.ready;
+    const games=[...sel].map(id=>GAMES[id]), per=24, pages=Math.ceil(games.length/per), files=[];
+    for (let p=0;p<pages;p++){
+      btn.textContent = `⏳ جاري تجهيز الصور... ${p+1}/${pages}`;
+      const blob = await makeSheet(games.slice(p*per,(p+1)*per), p+1, pages);
+      files.push(new File([blob], `طلب-العاب-${p+1}.jpg`, {type:"image/jpeg"}));
+    }
+    const c=CONTACTS[who];
+    if (navigator.canShare && navigator.canShare({files})){
+      try{ await navigator.share({files, text:`صور الألعاب المختارة — ${STORE}`}); 
+        $("tip").textContent="✅ تم — تأكد إنك اخترت محادثة "+c.name; $("tip").className="tip ok"; }
+      catch(e){ if (e.name!=="AbortError") throw e; }
+    } else {
+      files.forEach(f=>{ const a=document.createElement("a"); a.href=URL.createObjectURL(f); a.download=f.name; document.body.appendChild(a); a.click(); a.remove(); });
+      $("tip").textContent="✅ الصور نزلت بجهازك — افتح محادثة "+c.name+" بالواتساب وارسلها"; $("tip").className="tip ok";
+    }
+  }catch(e){ $("tip").textContent="صار خطأ بتجهيز الصور، جرّب مرة ثانية"; $("tip").className="tip"; }
+  btn.disabled=false; btn.textContent=old;
 }
 
 let t;
-$("grid").addEventListener("click", e => { const c = e.target.closest(".card"); if (c) toggle(+c.dataset.id); });
+$("grid").addEventListener("click", e => { if (ORDER) return; const c = e.target.closest(".card"); if (c) toggle(+c.dataset.id); });
 $("cats").addEventListener("click", e => { const b = e.target.closest(".cat"); if (!b) return; cat = b.dataset.c; renderCats(); render(); window.scrollTo({top:$("q").getBoundingClientRect().top+scrollY-10,behavior:"smooth"}); });
 $("q").addEventListener("input", e => { clearTimeout(t); t = setTimeout(()=>{ q = e.target.value; render(); }, 180); });
 $("list").addEventListener("click", e => { const b = e.target.closest("[data-rm]"); if (b) toggle(+b.dataset.rm); });
@@ -351,16 +495,53 @@ $("openSheet").onclick = () => openSheet(true);
 $("closeSheet").onclick = $("sheetBg").onclick = () => openSheet(false);
 $("sendQuick").onclick = () => openSheet(true);
 $("sendFull").onclick = send;
+$("sendImg").onclick = sendImages;
+$("who").addEventListener("click", e => { const b=e.target.closest(".person"); if(!b) return; who=+b.dataset.i; try{localStorage.setItem("ys_who",who)}catch(_){}; renderWho(); $("tip").textContent="أول شي دز القائمة، بعدين ارجع هنا ودز صور الألعاب لنفس المحادثة"; $("tip").className="tip"; });
 $("clearAll").onclick = () => { sel.clear(); save(); render(); updateBar(); };
 
-renderCats(); render(); updateBar();
+if (ORDER){ document.body.classList.add("order"); $("browseAll").href = location.origin + location.pathname; }
+renderWho(); renderCats(); render(); updateBar();
+/* ===== خط نيون أثناء اللمس ===== */
+(() => {
+  const c=$("fx"), x=c.getContext("2d"), D=Math.min(window.devicePixelRatio||1,2);
+  let W=0,H=0,run=false; const pts=[], rings=[];
+  const size=()=>{ W=innerWidth; H=innerHeight; c.width=W*D; c.height=H*D; x.setTransform(D,0,0,D,0,0); };
+  size(); addEventListener("resize", size, {passive:true});
+  const go=()=>{ if(!run){ run=true; requestAnimationFrame(frame); } };
+  const add=(e)=>{ pts.push({x:e.clientX,y:e.clientY,t:performance.now()}); if(pts.length>48) pts.shift(); go(); };
+  addEventListener("pointerdown", e=>{ rings.push({x:e.clientX,y:e.clientY,t:performance.now()}); pts.push({x:e.clientX,y:e.clientY,t:performance.now(),s:1}); go(); }, {passive:true});
+  addEventListener("pointermove", e=>{ if(e.pointerType==="mouse" && !e.buttons) return; add(e); }, {passive:true});
+  addEventListener("touchmove", e=>{ const t=e.touches[0]; if(t) add({clientX:t.clientX,clientY:t.clientY}); }, {passive:true});
+  function frame(now){
+    x.clearRect(0,0,W,H);
+    const life=420, hue=250+70*Math.sin(now/600);
+    while(pts.length && now-pts[0].t>life) pts.shift();
+    x.globalCompositeOperation="lighter"; x.lineCap="round"; x.lineJoin="round";
+    for(let i=1;i<pts.length;i++){
+      const a=pts[i-1], b=pts[i]; if (b.s || b.t-a.t>140) continue;
+      const k=1-(now-b.t)/life; if(k<=0) continue; const h=hue+i*3;
+      x.beginPath(); x.moveTo(a.x,a.y); x.lineTo(b.x,b.y);
+      x.strokeStyle=`hsla(${h},100%,60%,${k*.28})`; x.lineWidth=18*k; x.stroke();
+      x.strokeStyle=`hsla(${h},100%,62%,${k*.6})`; x.lineWidth=8*k; x.stroke();
+      x.strokeStyle=`hsla(${h},100%,92%,${k})`; x.lineWidth=2.6*k+.6; x.stroke();
+    }
+    for(let i=rings.length-1;i>=0;i--){
+      const r=rings[i], k=(now-r.t)/480; if(k>=1){ rings.splice(i,1); continue; }
+      x.beginPath(); x.arc(r.x,r.y,6+40*k,0,7);
+      x.strokeStyle=`hsla(${hue+40},100%,62%,${(1-k)*.35})`; x.lineWidth=10*(1-k); x.stroke();
+      x.strokeStyle=`hsla(${hue+40},100%,88%,${1-k})`; x.lineWidth=2.2*(1-k)+.5; x.stroke();
+    }
+    x.globalCompositeOperation="source-over";
+    if (pts.length || rings.length) requestAnimationFrame(frame); else { run=false; x.clearRect(0,0,W,H); }
+  }
+})();
 // تحميل بقية المكتبة بالخلفية بعد ما تفتح الصفحة (حتى يفتح الموقع بسرعة)
 window.addGames = rows => {
   addRows(rows); fullLoaded = true;
   try{ (JSON.parse(localStorage.getItem("ys_sel")||"[]")).forEach(n=>{ const g=GAMES.find(x=>x.n===n); if(g) sel.add(g.id) }) }catch(e){}
-  renderCats(); updateBar(); if (cat!==TOP || q) render();
+  renderCats(); updateBar(); if (cat!==TOP || q || ORDER) render();
 };
-window.addEventListener("load", () => { const sc=document.createElement("script"); sc.src="games.js?v=5"; document.body.appendChild(sc); });
+window.addEventListener("load", () => { const sc=document.createElement("script"); sc.src="games.js?v=7"; document.body.appendChild(sc); });
 </script>
 </body>
 </html>
