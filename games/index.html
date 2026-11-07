@@ -197,6 +197,8 @@ const CUSTOM_IMG = {
  "LittleBigPlanet 3": WIKI+"b/be/LittleBigPlanet_3_boxart.jpg",
  "The Last Guardian": WIKI+"2/25/The_Last_Guardian_cover_art.jpg",
  "inFAMOUS Second Son": WIKI+"3/34/Infamous_second_son_boxart.jpg",
+ "The Order: 1886": "https://store.playstation.com/store/api/chihiro/00_09_000/container/GB/en/999/EP9000-CUSA00076_00-TO1886GAME000000/image?w=400&h=400",
+ "Ratchet & Clank": "https://store.playstation.com/store/api/chihiro/00_09_000/container/AE/en/999/EP9000-CUSA01073_00-RCPS400000000000/image?w=400&h=400",
  /* "Minecraft": "images/minecraft.jpg", */
 };
 
@@ -249,7 +251,16 @@ function setImg(img, i){
   card.classList.toggle("sq", !!src[i][1]);
   if (src[i][1]) card.style.setProperty("--b", `url("${src[i][0]}")`);
 }
-function nextSrc(img){ setImg(img, +img.dataset.i + 1); }
+// إذا فشلت صورة المتجر (ضغط أو نت بطيء) نعيد المحاولة مرتين قبل ما ننتقل للبديل
+function nextSrc(img){
+  const tries = +(img.dataset.t||0);
+  if (img.src.includes("store.playstation.com") && tries < 2){
+    img.dataset.t = tries + 1;
+    const src = img.src; setTimeout(()=>{ img.src = src + (src.includes("&r=") ? "" : "&r=") + (tries+1); }, 1500*(tries+1));
+    return;
+  }
+  img.dataset.t = 0; setImg(img, +img.dataset.i + 1);
+}
 
 function renderCats(){
   $("cats").innerHTML = CATS.map(c => {
@@ -331,7 +342,7 @@ window.addGames = rows => {
   try{ (JSON.parse(localStorage.getItem("ys_sel")||"[]")).forEach(n=>{ const g=GAMES.find(x=>x.n===n); if(g) sel.add(g.id) }) }catch(e){}
   renderCats(); updateBar(); if (cat!==TOP || q) render();
 };
-window.addEventListener("load", () => { const sc=document.createElement("script"); sc.src="games.js?v=4"; document.body.appendChild(sc); });
+window.addEventListener("load", () => { const sc=document.createElement("script"); sc.src="games.js?v=5"; document.body.appendChild(sc); });
 </script>
 </body>
 </html>
