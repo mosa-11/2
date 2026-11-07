@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<meta name="theme-color" content="#05010f">
+<title>لوحة الإدارة | مركز مودرن</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800;900&family=Orbitron:wght@600;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#05010f;--panel:#0d0720;--line:#24154a;--cyan:#00f0ff;--pink:#ff2bd6;--lime:#39ff88;--yel:#ffd400;--red:#ff4d6d;--text:#eef3ff;--muted:#9a93c4}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html{background:var(--bg);touch-action:manipulation}
+body{font-family:'Cairo',system-ui,sans-serif;color:var(--text);min-height:100vh;padding-bottom:110px;
+ background:radial-gradient(700px 400px at 100% 0,rgba(255,43,214,.18),transparent 60%),radial-gradient(700px 400px at 0 30%,rgba(0,240,255,.12),transparent 60%),var(--bg)}
+.wrap{max-width:760px;margin:0 auto;padding:18px 14px}
+header{text-align:center;padding:10px 0 16px}
+header h1{font-size:30px;font-weight:900;text-shadow:0 0 14px var(--pink)}
+header p{color:var(--muted);font-size:14px}
+.card{background:rgba(13,7,32,.85);border:1px solid var(--line);border-radius:18px;padding:16px;margin-bottom:14px}
+.card h2{font-size:18px;font-weight:900;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.card h2 small{color:var(--muted);font-weight:600;font-size:12.5px}
+label{display:block;font-size:13px;color:var(--muted);font-weight:700;margin:8px 0 5px}
+input,select,textarea{width:100%;padding:11px 13px;border-radius:12px;border:1px solid var(--line);background:var(--bg);color:var(--text);font:600 15px 'Cairo';outline:none}
+input:focus,select:focus,textarea:focus{border-color:var(--cyan);box-shadow:0 0 0 3px rgba(0,240,255,.12)}
+textarea{min-height:64px;resize:vertical}
+.btn{border:0;border-radius:12px;padding:11px 16px;font:800 15px 'Cairo';cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px}
+.b-main{background:linear-gradient(90deg,var(--cyan),#9d6bff);color:#05010f;box-shadow:0 0 16px rgba(0,240,255,.45)}
+.b-pink{background:linear-gradient(90deg,var(--pink),#9d6bff);color:#fff}
+.b-ghost{background:transparent;border:1px solid var(--line);color:var(--text)}
+.b-red{background:transparent;border:1px solid rgba(255,77,109,.5);color:var(--red)}
+.row{display:flex;gap:8px;align-items:center}
+.row>*{flex:1}
+.tabs{display:flex;gap:8px;overflow-x:auto;margin-bottom:14px;scrollbar-width:none;position:sticky;top:0;z-index:5;padding:8px 0;background:linear-gradient(var(--bg) 80%,transparent)}
+.tab{flex:0 0 auto;padding:8px 16px;border-radius:99px;border:1px solid var(--line);background:var(--panel);color:var(--muted);font:800 14px 'Cairo';cursor:pointer}
+.tab.on{color:#fff;border-color:var(--pink);background:rgba(255,43,214,.15);box-shadow:0 0 12px rgba(255,43,214,.4)}
+.sec{display:none}.sec.on{display:block}
+.contact{display:grid;grid-template-columns:1fr 1fr auto;gap:8px;margin-bottom:8px}
+.game{display:flex;flex-wrap:wrap;gap:8px 10px;align-items:center;padding:10px 0;border-bottom:1px dashed var(--line)}
+.game img{width:44px;height:58px;object-fit:cover;border-radius:8px;background:#1a1036;flex:0 0 auto}
+.game .info{flex:1;min-width:0}
+.game .nm{font-weight:800;direction:ltr;text-align:right;line-height:1.35;word-break:break-word}
+.game .meta{font-size:12px;color:var(--muted)}
+.tg{display:flex;gap:6px;flex-wrap:wrap;width:100%;padding-inline-start:54px}
+.t{border:1px solid var(--line);background:var(--bg);color:var(--muted);border-radius:10px;padding:5px 9px;font:800 12px 'Cairo';cursor:pointer;white-space:nowrap}
+.t.on.hide{border-color:var(--red);color:var(--red);background:rgba(255,77,109,.12)}
+.t.on.top{border-color:var(--pink);color:#fff;background:rgba(255,43,214,.18)}
+.t.on.new{border-color:var(--yel);color:#05010f;background:var(--yel)}
+.edit{display:none;grid-template-columns:1fr 110px;gap:8px;padding:8px 0 4px}
+.edit.on{display:grid}
+.pill{display:inline-block;padding:2px 9px;border-radius:99px;font-size:11.5px;font-weight:800;margin-inline-start:4px}
+.p-h{background:rgba(255,77,109,.15);color:var(--red)}.p-t{background:rgba(255,43,214,.18);color:#ffb3ef}.p-n{background:var(--yel);color:#05010f}
+.savebar{position:fixed;left:12px;right:12px;bottom:max(14px,env(safe-area-inset-bottom));max-width:760px;margin:0 auto;display:flex;gap:10px;align-items:center;
+ padding:10px;border-radius:16px;background:rgba(13,7,32,.95);border:1px solid var(--cyan);box-shadow:0 0 22px rgba(0,240,255,.35);z-index:20}
+.savebar .st{flex:1;font-size:13px;font-weight:700;color:var(--muted)}
+.st.ok{color:var(--lime)}.st.err{color:var(--red)}.st.dirty{color:var(--yel)}
+.login{max-width:460px;margin:40px auto}
+.help{font-size:13px;color:var(--muted);line-height:1.9}
+.help ol{padding-inline-start:20px}
+.help code{direction:ltr;display:inline-block;background:#1a1036;padding:0 6px;border-radius:6px;color:var(--cyan)}
+.help a{color:var(--cyan)}
+.more{width:100%;margin-top:10px}
+.empty{color:var(--muted);text-align:center;padding:16px}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header><h1>⚙️ لوحة الإدارة</h1><p>مركز مودرن — مكتبة ألعاب PS4</p></header>
+
+  <!-- تسجيل الدخول -->
+  <div id="loginBox" class="card login">
+    <h2>🔐 تسجيل الدخول</h2>
+    <label>مفتاح GitHub (Token)</label>
+    <input id="tok" type="password" placeholder="github_pat_..." autocomplete="off" dir="ltr">
+    <button class="btn b-main" id="loginBtn" style="width:100%;margin-top:12px">دخول</button>
+    <p class="st" id="loginSt" style="margin-top:10px;font-size:13px"></p>
+    <details class="help" style="margin-top:12px">
+      <summary style="cursor:pointer;font-weight:800;color:var(--text)">شلون أسوي المفتاح؟ (مرة وحدة بس)</summary>
+      <ol>
+        <li>افتح <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">صفحة إنشاء مفتاح بـ GitHub</a> وانت مسجّل بحساب <code>mosa-11</code></li>
+        <li>بـ <b>Token name</b> اكتب: <code>admin</code> — وبـ <b>Expiration</b> اختار المدة اللي تريدها</li>
+        <li>بـ <b>Repository access</b> اختار <b>Only select repositories</b> واختار المستودع <code>2</code></li>
+        <li>بـ <b>Permissions</b> ← <b>Repository permissions</b> ← <b>Contents</b> خليها <b>Read and write</b></li>
+        <li>دوس <b>Generate token</b> وانسخ المفتاح والصقه هنا</li>
+      </ol>
+      المفتاح ينحفظ بس على هذا الجهاز. لا تنطيه لأحد.
+    </details>
+  </div>
+
+  <!-- اللوحة -->
+  <div id="panel" style="display:none">
+    <div class="tabs" id="tabs">
+      <button class="tab on" data-s="games">🎮 الألعاب</button>
+      <button class="tab" data-s="add">➕ إضافة لعبة</button>
+      <button class="tab" data-s="contacts">📞 أرقام الطلب</button>
+      <button class="tab" data-s="notice">📢 إعلان</button>
+      <button class="tab" data-s="acc">🔑 الحساب</button>
+    </div>
+
+    <section class="sec on" id="s-games">
+      <div class="card">
+        <h2>🎮 إدارة الألعاب <small id="gcount"></small></h2>
+        <input id="gq" type="search" placeholder="ابحث عن لعبة بالاسم..." autocomplete="off">
+        <div class="chips" id="gf">
+          <button class="t on" data-f="all">الكل</button>
+          <button class="t" data-f="hid">🙈 المخفية</button>
+          <button class="t" data-f="top">🔥 المشهورة المضافة</button>
+          <button class="t" data-f="new">🆕 الجديدة</button>
+          <button class="t" data-f="add">➕ المضافة يدوياً</button>
+        </div>
+        <div id="glist" style="margin-top:8px"></div>
+        <button class="btn b-ghost more" id="gmore" style="display:none">عرض المزيد</button>
+      </div>
+      <p class="help">🙈 <b>إخفاء</b>: اللعبة ما تطلع للزبون &nbsp;•&nbsp; 🔥 <b>مشهورة</b>: تطلع بقسم الأشهر &nbsp;•&nbsp; 🆕 <b>جديد</b>: تطلع بقسم جديد وبعلامة صفراء &nbsp;•&nbsp; ✏️ <b>تعديل</b>: تغيير الصورة أو الحجم</p>
+    </section>
+
+    <section class="sec" id="s-add">
+      <div class="card">
+        <h2>➕ إضافة لعبة جديدة</h2>
+        <label>اسم اللعبة</label><input id="an" placeholder="مثال: GTA VI" dir="auto">
+        <div class="row">
+          <div><label>القسم</label><select id="ac"></select></div>
+          <div><label>الحجم (GB)</label><input id="as" type="number" inputmode="decimal" placeholder="مثال: 45"></div>
+        </div>
+        <label>رابط صورة الغلاف</label><input id="ai" placeholder="https://..." dir="ltr">
+        <div class="row" style="margin-top:12px">
+          <label style="display:flex;align-items:center;gap:8px;margin:0;color:var(--text)"><input type="checkbox" id="anew" checked style="width:auto"> علّمها 🆕 جديد</label>
+          <button class="btn b-pink" id="addBtn">إضافة</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="sec" id="s-contacts">
+      <div class="card">
+        <h2>📞 أرقام الطلب <small>(الزبون يختار منهم)</small></h2>
+        <div id="clist"></div>
+        <button class="btn b-ghost" id="cadd" style="width:100%;margin-top:6px">+ إضافة رقم</button>
+      </div>
+    </section>
+
+    <section class="sec" id="s-notice">
+      <div class="card">
+        <h2>📢 إعلان أعلى الموقع <small>(اتركه فارغ حتى يختفي)</small></h2>
+        <textarea id="ntx" placeholder="مثال: 🔥 عرض اليوم: كل 5 ألعاب بسعر خاص"></textarea>
+      </div>
+    </section>
+
+    <section class="sec" id="s-acc">
+      <div class="card">
+        <h2>🔑 الحساب</h2>
+        <p class="help">انت مسجّل دخول على هذا الجهاز. التغييرات تنحفظ بملف <code>admin.json</code> بموقعك، وتظهر للزبائن خلال دقيقة أو دقيقتين بعد الحفظ.</p>
+        <div class="row" style="margin-top:12px">
+          <a class="btn b-ghost" href="./" target="_blank">🌐 فتح الموقع</a>
+          <button class="btn b-red" id="logout">تسجيل خروج</button>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>
+
+<div class="savebar" id="savebar" style="display:none">
+  <div class="st" id="st">لا توجد تغييرات</div>
+  <button class="btn b-main" id="saveBtn">💾 حفظ</button>
+</div>
+
+<script>
+const OWNER="mosa-11", REPO="2", PATH="games/admin.json";
+const API=`https://api.github.com/repos/${OWNER}/${REPO}/contents/${PATH}`;
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+const DEF={hidden:[],top:[],newGames:[],img:{},size:{},add:[],notice:"",contacts:[{name:"حيدر",phone:"9647737378089"},{name:"مصطفى",phone:"9647728454842"}]};
+let TOKEN="", SHA=null, A=JSON.parse(JSON.stringify(DEF)), dirty=false;
+let CN=[], GAMES=[];
+
+const b64e=s=>btoa(unescape(encodeURIComponent(s)));
+const b64d=s=>decodeURIComponent(escape(atob(s.replace(/\n/g,""))));
+const hdr=()=>({"Authorization":"Bearer "+TOKEN,"Accept":"application/vnd.github+json"});
+
+function status(t,cls){ const e=$("st"); e.textContent=t; e.className="st "+(cls||""); }
+function markDirty(){ dirty=true; status("⚠️ عندك تغييرات ما محفوظة","dirty"); }
+addEventListener("beforeunload",e=>{ if(dirty){ e.preventDefault(); e.returnValue=""; } });
+
+/* ---------- الدخول ---------- */
+async function login(t){
+  $("loginSt").textContent="⏳ جاري التحقق..."; $("loginSt").className="st";
+  TOKEN=t.trim();
+  try{
+    const r=await fetch(`https://api.github.com/repos/${OWNER}/${REPO}`,{headers:hdr()});
+    if(r.status===401) throw new Error("المفتاح غلط أو منتهي");
+    if(!r.ok) throw new Error("ما كدرت أوصل للمستودع ("+r.status+")");
+    const j=await r.json();
+    if(!(j.permissions&&j.permissions.push)) throw new Error("المفتاح ما عنده صلاحية كتابة على المستودع 2 — راجع خطوة Contents: Read and write");
+    try{ localStorage.setItem("adm_token",TOKEN); }catch(e){}
+    await loadAll();
+    $("loginBox").style.display="none"; $("panel").style.display="block"; $("savebar").style.display="flex";
+  }catch(e){ $("loginSt").textContent="❌ "+e.message; $("loginSt").className="st err"; TOKEN=""; }
+}
+$("loginBtn").onclick=()=>login($("tok").value);
+$("logout").onclick=()=>{ if(dirty && !confirmLeave()) return; try{localStorage.removeItem("adm_token")}catch(e){}; location.reload(); };
+function confirmLeave(){ return true; }
+
+/* ---------- تحميل البيانات ---------- */
+async function loadAll(){
+  // admin.json
+  const r=await fetch(API+"?t="+Date.now(),{headers:hdr(),cache:"no-store"});
+  if(r.ok){ const j=await r.json(); SHA=j.sha; try{ A=Object.assign(JSON.parse(JSON.stringify(DEF)),JSON.parse(b64d(j.content))); }catch(e){} }
+  else if(r.status===404){ SHA=null; A=JSON.parse(JSON.stringify(DEF)); }
+  else throw new Error("ما كدرت أقرا الإعدادات ("+r.status+")");
+  // الألعاب من الموقع نفسه
+  const html=await (await fetch("index.html?t="+Date.now(),{cache:"no-store"})).text();
+  CN=JSON.parse(html.match(/const CNAMES = (\[.*?\]);/)[1]);
+  const top=JSON.parse(html.match(/const TOPLIB = (\[.*?\]);\n/s)[1]);
+  const gjs=await (await fetch("games.js?t="+Date.now(),{cache:"no-store"})).text();
+  const rest=JSON.parse(gjs.slice(gjs.indexOf("window.addGames(")+16, gjs.lastIndexOf(");")));
+  GAMES=[...top,...rest].map(x=>({n:x[0],c:CN[x[1]]||x[1],cid:x[2]||"",s:x[3]||0,p:x[4]||0,z:x[5]||0}));
+  $("ac").innerHTML=CN.map(c=>`<option ${c==="أكشن"?"selected":""}>${esc(c)}</option>`).join("");
+  $("ntx").value=A.notice||"";
+  renderContacts(); renderGames();
+  status("✅ تم التحميل — "+GAMES.length.toLocaleString("en-US")+" لعبة","ok");
+}
+
+/* ---------- الألعاب ---------- */
+let gfilter="all", gshown=40;
+const has=(arr,n)=>(arr||[]).includes(n);
+function toggleIn(key,n){ const a=A[key]=A[key]||[]; const i=a.indexOf(n); i>=0?a.splice(i,1):a.push(n); markDirty(); }
+function imgOf(g){
+  if(A.img&&A.img[g.n]) return A.img[g.n];
+  if(g.s) return `https://cdn.cloudflare.steamstatic.com/steam/apps/${g.s}/library_600x900.jpg`;
+  if(g.cid) return `https://store.playstation.com/store/api/chihiro/00_09_000/container/${g.cid.startsWith("EP")?"GB":"US"}/en/999/${g.cid}/image?w=120&h=120`;
+  return "";
+}
+function allGames(){ return [...GAMES, ...(A.add||[]).map(x=>({n:x.n,c:x.c,z:+x.size||0,added:1}))]; }
+function renderGames(reset){
+  if(reset) gshown=40;
+  const q=$("gq").value.trim().toLowerCase();
+  let L=allGames().filter(g=>!q||g.n.toLowerCase().includes(q));
+  if(gfilter==="hid") L=L.filter(g=>has(A.hidden,g.n));
+  if(gfilter==="top") L=L.filter(g=>has(A.top,g.n));
+  if(gfilter==="new") L=L.filter(g=>has(A.newGames,g.n));
+  if(gfilter==="add") L=L.filter(g=>g.added);
+  const rank=g=>{ const n=g.n.toLowerCase(); return (q&&n===q?0:q&&n.startsWith(q)?1:2)*2+(g.p?0:1); };
+  L=L.sort((a,b)=>rank(a)-rank(b));
+  $("gcount").textContent=`(${L.length.toLocaleString("en-US")})`;
+  const part=L.slice(0,gshown);
+  $("glist").innerHTML = part.length ? part.map((g,i)=>{
+    const h=has(A.hidden,g.n), t=has(A.top,g.n), nw=has(A.newGames,g.n), sz=(A.size&&A.size[g.n])||g.z;
+    return `<div class="game-w"><div class="game">
+      <img loading="lazy" src="${esc(imgOf(g))}" onerror="this.style.visibility='hidden'">
+      <div class="info"><div class="nm">${esc(g.n)}</div>
+        <div class="meta">${esc(g.c)}${sz?` • ≈ ${sz}GB`:""}${g.p?` • 🔥`:""}${g.added?`<span class="pill p-n">مضافة</span>`:""}${h?`<span class="pill p-h">مخفية</span>`:""}</div></div>
+      <div class="tg">
+        <button class="t hide ${h?'on':''}" data-a="hidden" data-n="${esc(g.n)}">${h?'🙈 مخفية':'👁 ظاهرة'}</button>
+        <button class="t top ${t?'on':''}" data-a="top" data-n="${esc(g.n)}">🔥</button>
+        <button class="t new ${nw?'on':''}" data-a="newGames" data-n="${esc(g.n)}">🆕</button>
+        <button class="t" data-e="${i}">✏️</button>
+      </div></div>
+      <div class="edit" id="ed${i}">
+        <input placeholder="رابط صورة جديدة (اختياري)" dir="ltr" data-img="${esc(g.n)}" value="${esc((A.img&&A.img[g.n])||"")}">
+        <input type="number" inputmode="decimal" placeholder="الحجم GB" data-size="${esc(g.n)}" value="${esc((A.size&&A.size[g.n])||"")}">
+        ${g.added?`<button class="btn b-red" style="grid-column:1/-1" data-del="${esc(g.n)}">🗑 حذف اللعبة المضافة</button>`:""}
+      </div></div>`;
+  }).join("") : `<div class="empty">ما كو نتائج</div>`;
+  $("gmore").style.display = L.length>gshown ? "block" : "none";
+}
+let gt; $("gq").addEventListener("input",()=>{ clearTimeout(gt); gt=setTimeout(()=>renderGames(true),200); });
+$("gmore").onclick=()=>{ gshown+=40; renderGames(); };
+$("gf").addEventListener("click",e=>{ const b=e.target.closest("[data-f]"); if(!b) return; gfilter=b.dataset.f; [...$("gf").children].forEach(x=>x.classList.toggle("on",x===b)); renderGames(true); });
+$("glist").addEventListener("click",e=>{
+  const a=e.target.closest("[data-a]"); if(a){ toggleIn(a.dataset.a,a.dataset.n); renderGames(); return; }
+  const ed=e.target.closest("[data-e]"); if(ed){ $("ed"+ed.dataset.e).classList.toggle("on"); return; }
+  const d=e.target.closest("[data-del]"); if(d){ A.add=(A.add||[]).filter(x=>x.n!==d.dataset.del); ["hidden","top","newGames"].forEach(k=>A[k]=(A[k]||[]).filter(n=>n!==d.dataset.del)); markDirty(); renderGames(); }
+});
+$("glist").addEventListener("change",e=>{
+  const im=e.target.closest("[data-img]"); if(im){ A.img=A.img||{}; const v=im.value.trim(); v?A.img[im.dataset.img]=v:delete A.img[im.dataset.img]; markDirty(); }
+  const sz=e.target.closest("[data-size]"); if(sz){ A.size=A.size||{}; const v=parseFloat(sz.value); v>0?A.size[sz.dataset.size]=v:delete A.size[sz.dataset.size]; markDirty(); }
+});
+
+/* ---------- إضافة لعبة ---------- */
+$("addBtn").onclick=()=>{
+  const n=$("an").value.trim(); if(!n){ $("an").focus(); return; }
+  if(allGames().some(g=>g.n.toLowerCase()===n.toLowerCase())){ alert("هذي اللعبة موجودة بالمكتبة"); return; }
+  A.add=A.add||[]; A.add.push({n, c:$("ac").value, size:parseFloat($("as").value)||0});
+  const img=$("ai").value.trim(); if(img){ A.img=A.img||{}; A.img[n]=img; }
+  if($("anew").checked){ A.newGames=A.newGames||[]; A.newGames.push(n); }
+  $("an").value=$("as").value=$("ai").value="";
+  markDirty(); status("✅ انضافت «"+n+"» — لا تنسى تدوس حفظ","dirty");
+  gfilter="add"; [...$("gf").children].forEach(x=>x.classList.toggle("on",x.dataset.f==="add")); renderGames(true);
+  document.querySelector('[data-s="games"]').click();
+};
+
+/* ---------- الأرقام ---------- */
+const toIntl=p=>{ p=String(p).replace(/\D/g,""); if(p.startsWith("00")) p=p.slice(2); if(p.startsWith("0")) p="964"+p.slice(1); return p; };
+const toLocal=p=>{ p=String(p); return p.startsWith("964")?"0"+p.slice(3):p; };
+function renderContacts(){
+  const C=A.contacts||[];
+  $("clist").innerHTML = C.map((c,i)=>`<div class="contact">
+    <input value="${esc(c.name)}" placeholder="الاسم" data-cn="${i}">
+    <input value="${esc(toLocal(c.phone))}" placeholder="07xxxxxxxxx" inputmode="tel" dir="ltr" data-cp="${i}">
+    <button class="btn b-red" data-cd="${i}">🗑</button></div>`).join("") || `<div class="empty">ما كو أرقام — ضيف رقم واحد على الأقل</div>`;
+}
+$("clist").addEventListener("input",e=>{
+  const n=e.target.dataset.cn, p=e.target.dataset.cp;
+  if(n!==undefined){ A.contacts[n].name=e.target.value; markDirty(); }
+  if(p!==undefined){ A.contacts[p].phone=toIntl(e.target.value); markDirty(); }
+});
+$("clist").addEventListener("click",e=>{ const d=e.target.closest("[data-cd]"); if(d){ A.contacts.splice(+d.dataset.cd,1); markDirty(); renderContacts(); } });
+$("cadd").onclick=()=>{ A.contacts=A.contacts||[]; A.contacts.push({name:"",phone:""}); renderContacts(); markDirty(); };
+
+/* ---------- الإعلان ---------- */
+$("ntx").addEventListener("input",()=>{ A.notice=$("ntx").value.trim(); markDirty(); });
+
+/* ---------- التبويبات ---------- */
+$("tabs").addEventListener("click",e=>{ const b=e.target.closest(".tab"); if(!b) return;
+  [...$("tabs").children].forEach(x=>x.classList.toggle("on",x===b));
+  document.querySelectorAll(".sec").forEach(s=>s.classList.toggle("on",s.id==="s-"+b.dataset.s)); });
+
+/* ---------- الحفظ ---------- */
+$("saveBtn").onclick=async()=>{
+  A.contacts=(A.contacts||[]).filter(c=>c.name.trim()&&/^9647\d{9}$/.test(c.phone));
+  if(!A.contacts.length){ status("❌ لازم رقم واحد صحيح على الأقل (مثل 07xxxxxxxxx)","err"); return; }
+  const btn=$("saveBtn"); btn.disabled=true; status("⏳ جاري الحفظ...");
+  try{
+    const body={message:"تحديث إعدادات الموقع من لوحة الإدارة", content:b64e(JSON.stringify(A,null,1))};
+    if(SHA) body.sha=SHA;
+    let r=await fetch(API,{method:"PUT",headers:{...hdr(),"Content-Type":"application/json"},body:JSON.stringify(body)});
+    if(r.status===409||r.status===422){ // نسخة أحدث موجودة: نجيب الـ sha ونعيد
+      const g=await fetch(API+"?t="+Date.now(),{headers:hdr(),cache:"no-store"}); if(g.ok){ body.sha=(await g.json()).sha; r=await fetch(API,{method:"PUT",headers:{...hdr(),"Content-Type":"application/json"},body:JSON.stringify(body)}); }
+    }
+    if(!r.ok) throw new Error("فشل الحفظ ("+r.status+")");
+    SHA=(await r.json()).content.sha; dirty=false;
+    renderContacts();
+    status("✅ انحفظ! التغييرات تطلع بالموقع خلال دقيقة أو دقيقتين","ok");
+  }catch(e){ status("❌ "+e.message,"err"); }
+  btn.disabled=false;
+};
+
+/* ---------- تشغيل ---------- */
+try{ const t=localStorage.getItem("adm_token"); if(t) login(t); }catch(e){}
+</script>
+</body>
+</html>
